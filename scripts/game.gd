@@ -123,27 +123,52 @@ func process_production() -> void:
 		Constants.BUILDING_FACTORY: $Buildings/Factories/Instanzen.get_children(),
 		Constants.BUILDING_CITY: $Buildings/Cities/Instanzen.get_children()
 	}
+	process_farms()
+	process_factories()
+	process_cities()
+
+func normalize_efficiency_to_one(building) -> void:
+	if building.efficiency < 1.0:
+		building.efficiency += Constants.EFFICIENCY_RECOVERY_PER_TICK
+		if building.efficiency > 1.0:
+			building.efficiency = 1.0
+	elif building.efficiency > 1.0:
+		building.efficiency -= Constants.EFFICIENCY_LOSS_PER_TICK
+		if building.efficiency < 1.0:
+			building.efficiency = 1.0
+
+func process_farms() -> void:
+	var FOOD = Constants.RESOURCE_FOOD
+	for building in buildings[Constants.BUILDING_FARM]:
+		building.is_active = true
+		normalize_efficiency_to_one(building)
+		building.production_progress += building.outputs[FOOD] * building.efficiency
+		while building.production_progress >= 1.0:
+			add_resources(FOOD, 1)
+			building.production_progress -= 1.0
+
+func process_factories() -> void:
+	var FOOD = Constants.RESOURCE_FOOD
+	var TOOLS = Constants.RESOURCE_TOOLS
+	for building in buildings[Constants.BUILDING_FACTORY]:
+		if consume_resource(FOOD, building.inputs[FOOD]):
+			building.is_active = true
+			normalize_efficiency_to_one(building)
+			building.production_progress += building.outputs[TOOLS] * building.efficiency
+		else:
+			building.is_active = false
+			if building.efficiency > 0.0:
+				building.efficiency -= Constants.EFFICIENCY_LOSS_PER_TICK
+				if building.efficiency < 0.0:
+					building.efficiency = 0.0
+		while building.production_progress >= 1.0:
+			add_resources(TOOLS, 1)
+			building.production_progress -= 1.0
+
+func process_cities() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
 	var TOOLS = Constants.RESOURCE_TOOLS
 	var MONEY = Constants.RESOURCE_MONEY
-
-	for building in buildings[Constants.BUILDING_FARM]:
-		if consume_resource(TOOLS, building.inputs[TOOLS]):
-			add_resources(FOOD, building.outputs[FOOD]*building.efficiency)
-			building.is_active = true
-			if building.efficiency < 1.0:
-				building.efficiency += Constants.EFFICIENCY_RECOVERY_PER_TICK
-		else:
-			if building.efficiency > 0.0:
-				building.efficiency -= Constants.EFFICIENCY_LOSS_PER_TICK
-
-	for building in buildings[Constants.BUILDING_FACTORY]:
-		if consume_resource(FOOD, building.inputs[FOOD]):
-			add_resources(TOOLS, building.outputs[TOOLS])
-			building.is_active = true
-		else:
-			building.is_active = false
-			
 	for building in buildings[Constants.BUILDING_CITY]:
 		if stock[FOOD] >= building.inputs[FOOD] and stock[TOOLS] >= building.inputs[TOOLS]:
 			consume_resource(FOOD, building.inputs[FOOD])
