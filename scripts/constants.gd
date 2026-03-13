@@ -14,6 +14,7 @@ const BUILDING_CITY := "city"
 const BUILDING_BANK := "bank"
 
 const FARM_FOOD_OUTPUT := 1
+const FARM_TOOLS_INPUT := 1
 
 const FACTORY_FOOD_INPUT := 1
 const FACTORY_TOOLS_OUTPUT := 1
