@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://dwa476dgw4gxs"]
+
+[ext_resource type="Script" uid="uid://c5cauxiqtwyk3" path="res://scripts/ui.gd" id="1_nt7q6"]
+
+[node name="UI" type="CanvasLayer" unique_id=650135114]
+script = ExtResource("1_nt7q6")
+
+[node name="Panel" type="Panel" parent="." unique_id=1181628996]
+custom_minimum_size = Vector2(0, 25)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel" unique_id=1336444699]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Food" type="Label" parent="Panel/HBoxContainer" unique_id=2122785858]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Tools" type="Label" parent="Panel/HBoxContainer" unique_id=1577008248]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Money" type="Label" parent="Panel/HBoxContainer" unique_id=1150899215]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardPopup" type="CenterContainer" parent="." unique_id=1736792834]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CardPopup" unique_id=995697226]
+custom_minimum_size = Vector2(900, 450)
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CardPopup/Panel" unique_id=1800343238]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Top" type="PanelContainer" parent="CardPopup/Panel/VBoxContainer" unique_id=957481250]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Label" type="Label" parent="CardPopup/Panel/VBoxContainer/Top" unique_id=1624634147]
+layout_mode = 2
+text = "Choose a Building"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Middle" type="PanelContainer" parent="CardPopup/Panel/VBoxContainer" unique_id=1723598808]
+custom_minimum_size = Vector2(0, 350)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CardPopup/Panel/VBoxContainer/Middle" unique_id=1037715985]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Farm" type="Button" parent="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer" unique_id=1417276907]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Farm"
+
+[node name="City" type="Button" parent="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer" unique_id=743786684]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "City
+"
+
+[node name="Factory" type="Button" parent="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer" unique_id=1015625398]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Factory"
+
+[node name="Bottom" type="PanelContainer" parent="CardPopup/Panel/VBoxContainer" unique_id=251481972]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+size_flags_vertical = 8
+
+[connection signal="pressed" from="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer/Farm" to="." method="_on_farm_pressed"]
+[connection signal="pressed" from="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer/City" to="." method="_on_city_pressed"]
+[connection signal="pressed" from="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer/Factory" to="." method="_on_factory_pressed"]

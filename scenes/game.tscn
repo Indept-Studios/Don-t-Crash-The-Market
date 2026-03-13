@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bnjplwqmshgwj"]
 
 [ext_resource type="Script" uid="uid://dhwnsxrclg7b5" path="res://scripts/game.gd" id="1_uwrxv"]
+[ext_resource type="PackedScene" uid="uid://dwa476dgw4gxs" path="res://scenes/ui.tscn" id="3_lbhrr"]
 [ext_resource type="Texture2D" uid="uid://81eqlgjm0akv" path="res://icon.svg" id="3_lnu2h"]
 
 [node name="Game" type="Node2D" unique_id=57234821]
@@ -11,22 +12,101 @@ script = ExtResource("1_uwrxv")
 [node name="Farms" type="Node" parent="Buildings" unique_id=2117054079]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Farms" unique_id=965459775]
-offset_left = 368.0
-offset_top = 315.0
-offset_right = 496.0
-offset_bottom = 443.0
+offset_left = 347.0
+offset_top = 150.0
+offset_right = 475.0
+offset_bottom = 278.0
 texture = ExtResource("3_lnu2h")
+
+[node name="Label" type="Label" parent="Buildings/Farms/TextureRect" unique_id=1828318405]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -23.0
+offset_right = 24.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Farms"
+
+[node name="Instanzen" type="Node" parent="Buildings/Farms" unique_id=2090374870]
 
 [node name="Factories" type="Node" parent="Buildings" unique_id=454222383]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Factories" unique_id=238638132]
+offset_left = 1216.0
+offset_top = 144.0
+offset_right = 1344.0
+offset_bottom = 272.0
+texture = ExtResource("3_lnu2h")
+
+[node name="Label" type="Label" parent="Buildings/Factories/TextureRect" unique_id=626910846]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -35.5
+offset_top = -23.0
+offset_right = 35.5
+grow_horizontal = 2
+grow_vertical = 0
+text = "Factories"
+
+[node name="Instanzen" type="Node" parent="Buildings/Factories" unique_id=29051201]
 
 [node name="Cities" type="Node" parent="Buildings" unique_id=1865338654]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Cities" unique_id=1733736515]
+offset_left = 778.0
+offset_top = 372.0
+offset_right = 906.0
+offset_bottom = 500.0
+texture = ExtResource("3_lnu2h")
+
+[node name="Label" type="Label" parent="Buildings/Cities/TextureRect" unique_id=659341485]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Cities"
+
+[node name="Instanzen" type="Node" parent="Buildings/Cities" unique_id=1014308821]
 
 [node name="Bank" type="Node" parent="Buildings" unique_id=1635757743]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Bank" unique_id=344492558]
+offset_left = 776.0
+offset_top = 585.0
+offset_right = 904.0
+offset_bottom = 713.0
+texture = ExtResource("3_lnu2h")
 
-[node name="UI" type="CanvasLayer" parent="." unique_id=769780425]
+[node name="Label" type="Label" parent="Buildings/Bank/TextureRect" unique_id=1839546328]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Bank"
+
+[node name="Instanzen" type="Node" parent="Buildings/Bank" unique_id=74576661]
+
+[node name="UI" parent="." unique_id=650135114 instance=ExtResource("3_lbhrr")]

@@ -1,11 +1,18 @@
 extends Node
 
+signal ressources_changed()
+
 var building_scene = preload("res://scenes/building.tscn")
 
-var stock = {}
+var stock = {
+	Constants.RESOURCE_FOOD: 0,
+	Constants.RESOURCE_TOOLS: 0,
+	Constants.RESOURCE_MONEY: 0
+}
+
 var buildings = {}
 var next_building_id := 1
-
+var first_card_popup_shown := false
 
 #region tick
 signal tick_started(tick_number: int)
@@ -31,16 +38,25 @@ func run_tick() -> void:
 		return
 	if is_paused:
 		return
+
 	tick_count += 1
-	tick_started.emit(tick_count)
 	process_production()
+
+	if tick_count % Constants.CARD_POPUP_INTERVAL == 0:
+		pause_game()
+		$UI/CardPopup.show()
+		return
+
+	tick_started.emit(tick_count)
 	process_transport()
 	update_market_prices()
 	check_collapse_state()
 	tick_finished.emit(tick_count)
+
 	if Constants.DEBUGFLAG:
 		print("")
 		print("Tick %d" % tick_count)
+		print_stock()
 #endregion
 
 #region gameState
@@ -57,6 +73,8 @@ func setup_start_condition() -> void:
 	create_building(Constants.BUILDING_FARM)
 	create_building(Constants.BUILDING_FACTORY)
 	create_building(Constants.BUILDING_FACTORY)
+	stock[Constants.RESOURCE_FOOD] = 25
+	stock[Constants.RESOURCE_TOOLS] = 25
 	
 func stop_game() -> void:
 	is_running = false
@@ -77,15 +95,60 @@ func resume_game() -> void:
 		return
 	is_paused = false
 	tick_timer.start()
+	
+func print_stock() -> void:
+	print("Stock | Food: ", stock[Constants.RESOURCE_FOOD], " | Tools: ", stock[Constants.RESOURCE_TOOLS], " | Money: ", stock[Constants.RESOURCE_MONEY])
 #endregion
 
 func _ready() -> void:
+	$UI/CardPopup.hide()
 	setup_tick_timer()
 	setup_start_condition()
 	start_game()
+	$UI.building_chosen.connect(_on_building_chosen)
+	ressources_changed.connect(_on_ressources_changed)
+	_on_ressources_changed()
+
+func _on_ressources_changed() -> void:
+	$UI.update_resources(stock)
+	
+func _on_building_chosen(type: String) -> void:
+	create_building(type)
+	$UI/CardPopup.hide()
+	resume_game()
 
 func process_production() -> void:
-	pass
+	buildings = {
+		Constants.BUILDING_FARM: $Buildings/Farms/Instanzen.get_children(),
+		Constants.BUILDING_FACTORY: $Buildings/Factories/Instanzen.get_children(),
+		Constants.BUILDING_CITY: $Buildings/Cities/Instanzen.get_children()
+	}
+	var FOOD = Constants.RESOURCE_FOOD
+	var TOOLS = Constants.RESOURCE_TOOLS
+	var MONEY = Constants.RESOURCE_MONEY
+
+	for building in buildings[Constants.BUILDING_FARM]:
+		if consume_resource(TOOLS, building.inputs[TOOLS]):
+			add_resources(FOOD, building.outputs[FOOD])
+			building.is_active = true
+		else:
+			building.is_active = false
+
+	for building in buildings[Constants.BUILDING_FACTORY]:
+		if consume_resource(FOOD, building.inputs[FOOD]):
+			add_resources(TOOLS, building.outputs[TOOLS])
+			building.is_active = true
+		else:
+			building.is_active = false
+			
+	for building in buildings[Constants.BUILDING_CITY]:
+		if stock[FOOD] >= building.inputs[FOOD] and stock[TOOLS] >= building.inputs[TOOLS]:
+			consume_resource(FOOD, building.inputs[FOOD])
+			consume_resource(TOOLS, building.inputs[TOOLS])
+			add_resources(MONEY, building.outputs[MONEY])
+			building.is_active = true
+		else:
+			building.is_active = false
 
 func process_transport() -> void:
 	pass
@@ -96,6 +159,7 @@ func update_market_prices() -> void:
 func check_collapse_state() -> void:
 	pass
 
+#region Building Factory
 func create_building(type: String) -> void:
 	match type:
 		Constants.BUILDING_FARM:
@@ -109,7 +173,7 @@ func create_building(type: String) -> void:
 	next_building_id+=1
 
 func create_farm(id: int) -> void:
-	var parent_node = $Buildings/Farms
+	var parent_node = $Buildings/Farms/Instanzen
 	var building = building_scene.instantiate()
 	building.id = id
 	building.building_type = Constants.BUILDING_FARM
@@ -126,7 +190,7 @@ func create_farm(id: int) -> void:
 		print("FARM added")
 
 func create_factory(id: int) -> void:
-	var parent_node = $Buildings/Factories
+	var parent_node = $Buildings/Factories/Instanzen
 	var building = building_scene.instantiate()
 	building.id = id
 	building.building_type = Constants.BUILDING_FACTORY
@@ -143,7 +207,7 @@ func create_factory(id: int) -> void:
 		print("FACTORY added")
 
 func create_city(id: int) -> void:
-	var parent_node = $Buildings/Cities
+	var parent_node = $Buildings/Cities/Instanzen
 	var building = building_scene.instantiate()
 	building.id = id
 	building.building_type = Constants.BUILDING_CITY
@@ -161,7 +225,7 @@ func create_city(id: int) -> void:
 		print("CITY added")
 
 func create_bank(id: int) -> void:
-	var parent_node = $Buildings/Bank
+	var parent_node = $Buildings/Bank/Instanzen
 	var building = building_scene.instantiate()
 	building.id = id
 	building.building_type = Constants.BUILDING_BANK
@@ -176,10 +240,15 @@ func create_bank(id: int) -> void:
 
 	if Constants.DEBUGFLAG:
 		print("BANK added")
+#endregion
 
+func add_resources(type: String, amount: float) -> void:
+	stock[type] += amount
+	ressources_changed.emit()
 
-func add_resources() -> void:
-	pass
-
-func consume_resource() -> void:
-	pass
+func consume_resource(type: String, amount: float) -> bool:
+	if stock[type] >= amount:
+		stock[type] -= amount
+		ressources_changed.emit()
+		return true
+	return false
