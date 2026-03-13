@@ -129,10 +129,13 @@ func process_production() -> void:
 
 	for building in buildings[Constants.BUILDING_FARM]:
 		if consume_resource(TOOLS, building.inputs[TOOLS]):
-			add_resources(FOOD, building.outputs[FOOD])
+			add_resources(FOOD, building.outputs[FOOD]*building.efficiency)
 			building.is_active = true
+			if building.efficiency < 1.0:
+				building.efficiency += Constants.EFFICIENCY_RECOVERY_PER_TICK
 		else:
-			building.is_active = false
+			if building.efficiency > 0.0:
+				building.efficiency -= Constants.EFFICIENCY_LOSS_PER_TICK
 
 	for building in buildings[Constants.BUILDING_FACTORY]:
 		if consume_resource(FOOD, building.inputs[FOOD]):

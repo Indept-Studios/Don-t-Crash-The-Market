@@ -36,3 +36,5 @@ Thumbs.db
 # Godot editor settings
 editor_layout.cfg
 editor_settings.tres
+
+*.uid
