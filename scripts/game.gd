@@ -1,6 +1,6 @@
 extends Node
 
-signal ressources_changed()
+signal resources_changed()
 
 var building_scene = preload("res://scenes/building.tscn")
 
@@ -12,9 +12,7 @@ var stock = {
 
 var buildings = {}
 var next_building_id := 1
-var first_card_popup_shown := false
 var has_won: bool = false
-var highscores: Array = []
 
 #region tick
 signal tick_started(tick_number: int)
@@ -42,28 +40,30 @@ func run_tick() -> void:
 		return
 
 	tick_count += 1
+	tick_started.emit(tick_count)
+
 	process_production()
+	process_transport()
+	update_market_prices()
+	check_collapse_state()
+
 	if Constants.DEBUGFLAG:
 		print("")
 		print("Tick %d" % tick_count)
 		print_stock()
+
+	tick_finished.emit(tick_count)
+
 	if tick_count % Constants.CARD_POPUP_INTERVAL == 0:
 		pause_game()
 		$UI/CardPopup.show()
-		return
-
-	tick_started.emit(tick_count)
-	process_transport()
-	update_market_prices()
-	check_collapse_state()
-	check_win_condition()
-	tick_finished.emit(tick_count)
 
 #endregion
 
 #region gameState
 func start_game() -> void:
-	tick_count = 0
+	reset_game_state()
+	setup_start_condition()
 	is_running = true
 	is_paused = false
 	tick_timer.start()
@@ -105,14 +105,21 @@ func load_highscores() -> Array:
 	if not FileAccess.file_exists(Constants.HIGHSCORE_PATH):
 		return []
 	var file = FileAccess.open(Constants.HIGHSCORE_PATH, FileAccess.READ)
+	if file == null:
+		return []
 	var content = file.get_as_text()
 	file.close()
+
 	var data = JSON.parse_string(content)
-	if data == null:
+	if data == null or typeof(data) != TYPE_DICTIONARY:
 		return []
-	if not data.has("best_times"):
+	if not data.has("best_times") or typeof(data["best_times"]) != TYPE_ARRAY:
 		return []
-	return data["best_times"]
+	var result: Array = []
+	for entry in data["best_times"]:
+		if typeof(entry) == TYPE_DICTIONARY and entry.has("ticks") and entry.has("date"):
+			result.append(entry)
+	return result
 	
 func save_highscores(highscores: Array) -> void:
 	var data = {
@@ -129,10 +136,36 @@ func add_highscore(tick_count: float) -> void:
 		"date": Time.get_datetime_string_from_system()
 	}
 	highscores.append(entry)
-	highscores.sort_custom(func(a, b): return a["tick_count"] < b["tick_count"])
-	if highscores.size() > 10:
-		highscores.resize(10)
+	highscores.sort_custom(func(a, b): return a["ticks"] < b["ticks"])
+	if highscores.size() > Constants.MAX_HIGHSCORES:
+		highscores.resize(Constants.MAX_HIGHSCORES)
 	save_highscores(highscores)
+	
+func reset_game_state() -> void:
+	stop_game()
+
+	has_won = false
+	tick_count = 0
+	is_paused = false
+	is_running = false
+	next_building_id = 1
+
+	stock = {
+		Constants.RESOURCE_FOOD: 0,
+		Constants.RESOURCE_TOOLS: 0,
+		Constants.RESOURCE_MONEY: 0
+	}
+	buildings = {}
+	for child in $Buildings/Farms/Instanzen.get_children():
+		child.queue_free()
+	for child in $Buildings/Factories/Instanzen.get_children():
+		child.queue_free()
+	for child in $Buildings/Cities/Instanzen.get_children():
+		child.queue_free()
+	for child in $Buildings/Bank/Instanzen.get_children():
+		child.queue_free()
+
+	resources_changed.emit()
 #endregion
 
 func _ready() -> void:
@@ -141,10 +174,10 @@ func _ready() -> void:
 	setup_start_condition()
 	start_game()
 	$UI.building_chosen.connect(_on_building_chosen)
-	ressources_changed.connect(_on_ressources_changed)
-	_on_ressources_changed()
+	resources_changed.connect(_on_resources_changed)
+	_on_resources_changed()
 
-func _on_ressources_changed() -> void:
+func _on_resources_changed() -> void:
 	$UI.update_resources(stock)
 	
 func _on_building_chosen(type: String) -> void:
@@ -248,11 +281,6 @@ func process_cities() -> void:
 			building.production_progress -= 1.0
 
 func process_banks() -> void:
-	if stock[Constants.RESOURCE_MONEY] == 0:
-		return
-	check_victory_state()
-
-func check_victory_state() -> void:
 	if has_won:
 		return
 	if stock[Constants.RESOURCE_MONEY] >= Constants.BANK_GOAL:
@@ -264,19 +292,12 @@ func handle_victory() -> void:
 	var run_time = get_run_time_seconds()
 	add_highscore(run_time)
 	print("Victory in ", format_time(run_time))
-	print_highscores()
 
 func format_time(seconds: float) -> String:
 	var total_seconds = int(seconds)
 	var minutes = total_seconds / 60
 	var secs = total_seconds % 60
 	return "%02d:%02d" % [minutes, secs]
-
-func print_highscores() -> void:
-	print("=== HIGHSCORES ===")
-	for i in range(highscores.size()):
-		var entry = highscores[i]
-		print(str(i + 1), ". ", format_time(entry["time_seconds"]), " | ", entry["date"])
 
 func get_run_time_seconds() -> float:
 	return tick_count * Constants.TICK_INTERVAL
@@ -290,10 +311,6 @@ func update_market_prices() -> void:
 func check_collapse_state() -> void:
 	pass
 
-func check_win_condition() -> void:
-	if stock[Constants.RESOURCE_MONEY] >= 2000:
-		add_highscore(tick_count)
-	
 #region Building Factory
 func create_building(type: String) -> void:
 	match type:
@@ -379,11 +396,11 @@ func create_bank(id: int) -> void:
 
 func add_resources(type: String, amount: float) -> void:
 	stock[type] += amount
-	ressources_changed.emit()
+	resources_changed.emit()
 
 func consume_resource(type: String, amount: float) -> bool:
 	if stock[type] >= amount:
 		stock[type] -= amount
-		ressources_changed.emit()
+		resources_changed.emit()
 		return true
 	return false
