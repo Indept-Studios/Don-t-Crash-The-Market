@@ -14,14 +14,14 @@ const BUILDING_FACTORY := "factory"
 const BUILDING_CITY := "city"
 const BUILDING_BANK := "bank"
 
-const FARM_FOOD_OUTPUT := 1
+const FARM_FOOD_OUTPUT := 5
 const FARM_TOOLS_INPUT := 0
 
-const FACTORY_FOOD_INPUT := 1
-const FACTORY_TOOLS_OUTPUT := 1
+const FACTORY_FOOD_INPUT := 3
+const FACTORY_TOOLS_OUTPUT := 2
 
-const CITY_FOOD_INPUT := 1
-const CITY_TOOLS_INPUT := 1
+const CITY_FOOD_INPUT := 4
+const CITY_TOOLS_INPUT := 3
 const CITY_MONEY_OUTPUT := 1
 
 const EFFICIENCY_LOSS_PER_TICK := 0.1
