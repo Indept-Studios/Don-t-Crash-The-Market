@@ -87,7 +87,6 @@ func setup_start_condition() -> void:
 	create_building(Constants.BUILDING_FARM)
 	create_building(Constants.BUILDING_FARM)
 	create_building(Constants.BUILDING_FACTORY)
-	create_building(Constants.BUILDING_FACTORY)
 	stock[Constants.RESOURCE_FOOD] = 25
 	stock[Constants.RESOURCE_TOOLS] = 25
 	

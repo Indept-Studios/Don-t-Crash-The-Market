@@ -1,6 +1,6 @@
 extends Control
 
-var game_scene = preload("res://scenes/Game.tscn")
+var game_scene = preload("res://scenes/game.tscn")
 var highscroe_scene = preload("res://scenes/highscore.tscn")
 
 func _on_new_game_pressed():
