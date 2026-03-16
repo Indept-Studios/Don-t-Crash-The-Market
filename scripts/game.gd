@@ -2,6 +2,8 @@ extends Node
 
 signal resources_changed()
 
+@export var card_manager = Node
+
 var building_scene = preload("res://scenes/building.tscn")
 
 var stock = {
@@ -9,6 +11,15 @@ var stock = {
 	Constants.RESOURCE_TOOLS: 0,
 	Constants.RESOURCE_MONEY: 0
 }
+
+var modifiers = {
+	"farm_output": 0,
+	"factory_output": 0,
+	"city_food_input": 0,
+	"city_tools_input": 0,
+	"city_money_output": 0
+}
+var temporary_effects:Array=[]
 
 var buildings = {}
 var next_building_id := 1
@@ -38,26 +49,31 @@ func run_tick() -> void:
 		return
 	if is_paused:
 		return
-
+	if has_won:
+		return
 	tick_count += 1
-	tick_started.emit(tick_count)
-
 	process_production()
-	process_transport()
-	update_market_prices()
-	check_collapse_state()
-
+	process_banks()
+	if has_won:
+		return
 	if Constants.DEBUGFLAG:
 		print("")
 		print("Tick %d" % tick_count)
 		print_stock()
-
+	if tick_count % Constants.CARD_POPUP_INTERVAL == 0:
+		pause_game()
+		$UI/CardPopup.show()
+		return
+	tick_started.emit(tick_count)
+	process_transport()
+	update_temporary_effects()
 	tick_finished.emit(tick_count)
 
 	if tick_count % Constants.CARD_POPUP_INTERVAL == 0:
 		pause_game()
+		var cards = card_manager.draw_cards()
+		$UI.show_cards(cards)
 		$UI/CardPopup.show()
-
 #endregion
 
 #region gameState
@@ -169,19 +185,23 @@ func reset_game_state() -> void:
 #endregion
 
 func _ready() -> void:
+	card_manager.game = self
 	$UI/CardPopup.hide()
 	setup_tick_timer()
 	setup_start_condition()
 	start_game()
-	$UI.building_chosen.connect(_on_building_chosen)
+	$UI.card_selected.connect(card_selected)
 	resources_changed.connect(_on_resources_changed)
 	_on_resources_changed()
 
 func _on_resources_changed() -> void:
 	$UI.update_resources(stock)
 	
-func _on_building_chosen(type: String) -> void:
-	create_building(type)
+
+func card_selected(card:Dictionary) -> void:
+	var success = card_manager.apply_card(card,self)
+	if not success:
+		return
 	$UI/CardPopup.hide()
 	resume_game()
 
@@ -218,26 +238,51 @@ func move_efficiency_toward(building, target: float) -> void:
 	if building.efficiency < 0.0:
 		building.efficiency = 0.0
 
+func get_modified_value(base_value:int, modifier_value:int, min_value:int=0) -> int:
+	return max(min_value, base_value + modifier_value)
+
+func update_temporary_effects() -> void:
+	for i in range(temporary_effects.size()-1,-1,-1):
+		temporary_effects[i]["remaining_ticks"] -= 1
+		if temporary_effects[i]["remaining_ticks"] <= 0:
+			temporary_effects.remove_at(i)
+
+func get_temporary_modifier(effect_name:String) -> int:
+	var total = 0
+	for effect in temporary_effects:
+		if effect["effect"] == effect_name:
+			total += effect["value"]
+	return total
+
+func get_modifier(effect_name:String) -> int:
+	return modifiers.get(effect_name,0)+get_temporary_modifier(effect_name)
+
 func process_farms() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
 	for building in buildings[Constants.BUILDING_FARM]:
 		building.is_active = true
 		normalize_efficiency_to_one(building)
-		building.production_progress += building.outputs[FOOD] * building.efficiency
+		var modifier = get_modifier("farm_output")
+		var effective_output = get_modified_value(Constants.FARM_FOOD_OUTPUT,modifier,0)
+		building.production_progress += effective_output*building.efficiency
 		if Constants.DEBUGFLAG:
 			print(building.production_progress)
 		while building.production_progress >= 1.0:
-			add_resources(FOOD, 1)
+			add_resources(FOOD,1)
 			building.production_progress -= 1.0
 
 func process_factories() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
 	var TOOLS = Constants.RESOURCE_TOOLS
 	for building in buildings[Constants.BUILDING_FACTORY]:
-		if consume_resource(FOOD, building.inputs[FOOD]):
+		var base_input = building.inputs[FOOD]
+		var modifier = get_modifier("factory_food_input")
+		var food_input = max(1,base_input+modifier)
+		var tools_output = get_modified_value(building.outputs[TOOLS],get_modifier("factory_output"),0)
+		if consume_resource(FOOD,food_input):
 			building.is_active = true
 			normalize_efficiency_to_one(building)
-			building.production_progress += building.outputs[TOOLS] * building.efficiency
+			building.production_progress += tools_output*building.efficiency
 		else:
 			building.is_active = false
 			if building.efficiency > 0.0:
@@ -247,7 +292,7 @@ func process_factories() -> void:
 		if Constants.DEBUGFLAG:
 			print(building.production_progress)
 		while building.production_progress >= 1.0:
-			add_resources(TOOLS, 1)
+			add_resources(TOOLS,1)
 			building.production_progress -= 1.0
 
 func process_cities() -> void:
@@ -255,14 +300,24 @@ func process_cities() -> void:
 	var TOOLS = Constants.RESOURCE_TOOLS
 	var MONEY = Constants.RESOURCE_MONEY
 	for building in buildings[Constants.BUILDING_CITY]:
-		var has_food = stock[FOOD] >= building.inputs[FOOD]
-		var has_tools = stock[TOOLS] >= building.inputs[TOOLS]
+		var base_food = building.inputs[FOOD]
+		var base_tools = building.inputs[TOOLS]
+		
+		var food_modifier = get_modifier("city_food_input")
+		var tools_modifier = get_modifier("city_tools_input")
+		
+		var food_input = max(1,base_food+food_modifier)
+		var tools_input = max(1,base_tools+tools_modifier)
+		
+		var money_output = get_modified_value(building.outputs[MONEY],get_modifier("city_money_output"),0)
+		var has_food = stock[FOOD] >= food_input
+		var has_tools = stock[TOOLS] >= tools_input
 		var supplied_resources = 0
 		if has_food:
-			consume_resource(FOOD, building.inputs[FOOD])
+			consume_resource(FOOD,food_input)
 			supplied_resources += 1
 		if has_tools:
-			consume_resource(TOOLS, building.inputs[TOOLS])
+			consume_resource(TOOLS,tools_input)
 			supplied_resources += 1
 		var target_efficiency = 0.0
 		if supplied_resources == 2:
@@ -274,10 +329,10 @@ func process_cities() -> void:
 		else:
 			target_efficiency = 0.0
 			building.is_active = false
-		move_efficiency_toward(building, target_efficiency)
+		move_efficiency_toward(building,target_efficiency)
 		building.production_progress += building.efficiency
 		while building.production_progress >= 1.0:
-			add_resources(MONEY, building.outputs[MONEY])
+			add_resources(MONEY,money_output)
 			building.production_progress -= 1.0
 
 func process_banks() -> void:
@@ -305,12 +360,6 @@ func get_run_time_seconds() -> float:
 func process_transport() -> void:
 	pass
 
-func update_market_prices() -> void:
-	pass
-
-func check_collapse_state() -> void:
-	pass
-
 #region Building Factory
 func create_building(type: String) -> void:
 	match type:
@@ -335,8 +384,8 @@ func create_farm(id: int) -> void:
 	building.outputs = {
 		Constants.RESOURCE_FOOD: Constants.FARM_FOOD_OUTPUT
 	}
-	building.name = "Farm_%d" % parent_node.get_child_count()
 	parent_node.add_child(building)
+	building.name = "Farm_" + str(id)
 
 	if Constants.DEBUGFLAG:
 		print("FARM added")
@@ -352,8 +401,8 @@ func create_factory(id: int) -> void:
 	building.outputs = {
 		Constants.RESOURCE_TOOLS: Constants.FACTORY_TOOLS_OUTPUT
 	}
-	building.name = "Factory_%d" % parent_node.get_child_count()
 	parent_node.add_child(building)
+	building.name = "Factory_" + str(id)
 
 	if Constants.DEBUGFLAG:
 		print("FACTORY added")
@@ -370,8 +419,8 @@ func create_city(id: int) -> void:
 	building.outputs = {
 		Constants.RESOURCE_MONEY: Constants.CITY_MONEY_OUTPUT
 	}
-	building.name = "City_%d" % parent_node.get_child_count()
 	parent_node.add_child(building)
+	building.name = "City_" + str(id)
 
 	if Constants.DEBUGFLAG:
 		print("CITY added")

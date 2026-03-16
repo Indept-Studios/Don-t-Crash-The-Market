@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dy2yix7nu3264"]
+
+[ext_resource type="Script" uid="uid://bf57l3ycfe5yu" path="res://scripts/card.gd" id="1_d81rb"]
+
+[node name="Card" type="Panel" unique_id=1296471291]
+custom_minimum_size = Vector2(297, 350)
+offset_right = 297.0
+offset_bottom = 350.0
+size_flags_horizontal = 3
+script = ExtResource("1_d81rb")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1318951799]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=417447017]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 25
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="VBoxContainer" unique_id=1573586151]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="EffectLabel" type="Label" parent="VBoxContainer" unique_id=943026277]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+autowrap_mode = 2

@@ -7,3 +7,5 @@ extends Node2D
 @export var production_progress := 0.0
 @export var is_active := true
 @export var id := 0
+@export var modifiers: Dictionary = {}
+@export var temporary_effects: Array = []

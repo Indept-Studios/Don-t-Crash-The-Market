@@ -67,7 +67,7 @@ size_flags_vertical = 0
 
 [node name="Label" type="Label" parent="CardPopup/Panel/VBoxContainer/Top" unique_id=1624634147]
 layout_mode = 2
-text = "Choose a Building"
+text = "Choose a Card"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -81,27 +81,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Farm" type="Button" parent="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer" unique_id=1417276907]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Farm"
-
-[node name="City" type="Button" parent="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer" unique_id=743786684]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "City
-"
-
-[node name="Factory" type="Button" parent="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer" unique_id=1015625398]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Factory"
-
 [node name="Bottom" type="PanelContainer" parent="CardPopup/Panel/VBoxContainer" unique_id=251481972]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 size_flags_vertical = 8
-
-[connection signal="pressed" from="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer/Farm" to="." method="_on_farm_pressed"]
-[connection signal="pressed" from="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer/City" to="." method="_on_city_pressed"]
-[connection signal="pressed" from="CardPopup/Panel/VBoxContainer/Middle/HBoxContainer/Factory" to="." method="_on_factory_pressed"]

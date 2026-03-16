@@ -27,6 +27,6 @@ const CITY_MONEY_OUTPUT := 1
 const EFFICIENCY_LOSS_PER_TICK := 0.1
 const EFFICIENCY_RECOVERY_PER_TICK := 0.05
 
-const BANK_GOAL := 2000
+const BANK_GOAL := 1000
 const HIGHSCORE_PATH := "user://highscores.json"
 const MAX_HIGHSCORES := 10
