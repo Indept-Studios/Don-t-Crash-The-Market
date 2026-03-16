@@ -2,7 +2,8 @@ extends Node
 
 signal resources_changed()
 
-@export var card_manager = Node
+@onready var card_manager = $Card_Manager
+@export var highscore_manager: Node
 
 var building_scene = preload("res://scenes/building.tscn")
 
@@ -62,18 +63,14 @@ func run_tick() -> void:
 		print_stock()
 	if tick_count % Constants.CARD_POPUP_INTERVAL == 0:
 		pause_game()
+		var cards = card_manager.draw_cards()
+		$UI.show_cards(cards)
 		$UI/CardPopup.show()
 		return
 	tick_started.emit(tick_count)
 	process_transport()
 	update_temporary_effects()
 	tick_finished.emit(tick_count)
-
-	if tick_count % Constants.CARD_POPUP_INTERVAL == 0:
-		pause_game()
-		var cards = card_manager.draw_cards()
-		$UI.show_cards(cards)
-		$UI/CardPopup.show()
 #endregion
 
 #region gameState
@@ -116,46 +113,6 @@ func resume_game() -> void:
 	
 func print_stock() -> void:
 	print("Stock | Food: ", stock[Constants.RESOURCE_FOOD], " | Tools: ", stock[Constants.RESOURCE_TOOLS], " | Money: ", stock[Constants.RESOURCE_MONEY])
-	
-func load_highscores() -> Array:
-	if not FileAccess.file_exists(Constants.HIGHSCORE_PATH):
-		return []
-	var file = FileAccess.open(Constants.HIGHSCORE_PATH, FileAccess.READ)
-	if file == null:
-		return []
-	var content = file.get_as_text()
-	file.close()
-
-	var data = JSON.parse_string(content)
-	if data == null or typeof(data) != TYPE_DICTIONARY:
-		return []
-	if not data.has("best_times") or typeof(data["best_times"]) != TYPE_ARRAY:
-		return []
-	var result: Array = []
-	for entry in data["best_times"]:
-		if typeof(entry) == TYPE_DICTIONARY and entry.has("ticks") and entry.has("date"):
-			result.append(entry)
-	return result
-	
-func save_highscores(highscores: Array) -> void:
-	var data = {
-		"best_times": highscores
-	}
-	var file = FileAccess.open(Constants.HIGHSCORE_PATH, FileAccess.WRITE)
-	file.store_string(JSON.stringify(data))
-	file.close()
-	
-func add_highscore(tick_count: float) -> void:
-	var highscores = load_highscores()
-	var entry = {
-		"ticks": tick_count,
-		"date": Time.get_datetime_string_from_system()
-	}
-	highscores.append(entry)
-	highscores.sort_custom(func(a, b): return a["ticks"] < b["ticks"])
-	if highscores.size() > Constants.MAX_HIGHSCORES:
-		highscores.resize(Constants.MAX_HIGHSCORES)
-	save_highscores(highscores)
 	
 func reset_game_state() -> void:
 	stop_game()
@@ -257,6 +214,18 @@ func get_temporary_modifier(effect_name:String) -> int:
 func get_modifier(effect_name:String) -> int:
 	return modifiers.get(effect_name,0)+get_temporary_modifier(effect_name)
 
+func debug_production(building, base_value, modifier, effective_value) -> void:
+	if not Constants.DEBUGFLAG:
+		return
+	print(
+		building.name,
+		" | base:", base_value,
+		" mod:", modifier,
+		" eff:", effective_value,
+		" effc:", building.efficiency,
+		" prog:", building.production_progress
+	)
+
 func process_farms() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
 	for building in buildings[Constants.BUILDING_FARM]:
@@ -265,8 +234,7 @@ func process_farms() -> void:
 		var modifier = get_modifier("farm_output")
 		var effective_output = get_modified_value(Constants.FARM_FOOD_OUTPUT,modifier,0)
 		building.production_progress += effective_output*building.efficiency
-		if Constants.DEBUGFLAG:
-			print(building.production_progress)
+		debug_production(building,Constants.FARM_FOOD_OUTPUT,modifier,effective_output)
 		while building.production_progress >= 1.0:
 			add_resources(FOOD,1)
 			building.production_progress -= 1.0
@@ -278,6 +246,7 @@ func process_factories() -> void:
 		var base_input = building.inputs[FOOD]
 		var modifier = get_modifier("factory_food_input")
 		var food_input = max(1,base_input+modifier)
+		var output_modifier = get_modifier("factory_output")
 		var tools_output = get_modified_value(building.outputs[TOOLS],get_modifier("factory_output"),0)
 		if consume_resource(FOOD,food_input):
 			building.is_active = true
@@ -289,8 +258,7 @@ func process_factories() -> void:
 				building.efficiency -= Constants.EFFICIENCY_LOSS_PER_TICK
 				if building.efficiency < 0.0:
 					building.efficiency = 0.0
-		if Constants.DEBUGFLAG:
-			print(building.production_progress)
+		debug_production(building,building.outputs[TOOLS],output_modifier,tools_output)
 		while building.production_progress >= 1.0:
 			add_resources(TOOLS,1)
 			building.production_progress -= 1.0
@@ -305,13 +273,16 @@ func process_cities() -> void:
 		
 		var food_modifier = get_modifier("city_food_input")
 		var tools_modifier = get_modifier("city_tools_input")
+		var money_modifier = get_modifier("city_money_output")
 		
 		var food_input = max(1,base_food+food_modifier)
 		var tools_input = max(1,base_tools+tools_modifier)
 		
-		var money_output = get_modified_value(building.outputs[MONEY],get_modifier("city_money_output"),0)
+		var money_output = get_modified_value(building.outputs[MONEY],money_modifier,0)
+		
 		var has_food = stock[FOOD] >= food_input
 		var has_tools = stock[TOOLS] >= tools_input
+		
 		var supplied_resources = 0
 		if has_food:
 			consume_resource(FOOD,food_input)
@@ -331,6 +302,7 @@ func process_cities() -> void:
 			building.is_active = false
 		move_efficiency_toward(building,target_efficiency)
 		building.production_progress += building.efficiency
+		debug_production(building,building.outputs[MONEY],money_modifier,money_output)
 		while building.production_progress >= 1.0:
 			add_resources(MONEY,money_output)
 			building.production_progress -= 1.0
@@ -345,8 +317,10 @@ func handle_victory() -> void:
 	has_won = true
 	stop_game()
 	var run_time = get_run_time_seconds()
-	add_highscore(run_time)
-	print("Victory in ", format_time(run_time))
+	HighscoreManager.add_highscore(run_time)
+	if Constants.DEBUGFLAG:
+		print("Victory in ",format_time(run_time))
+	get_tree().change_scene_to_file("res://scenes/highscore.tscn")
 
 func format_time(seconds: float) -> String:
 	var total_seconds = int(seconds)

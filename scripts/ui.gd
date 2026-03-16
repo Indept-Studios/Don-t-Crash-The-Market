@@ -11,7 +11,7 @@ signal card_selected(card)
 var current_cards: Array
 
 func show_cards(cards:Array) -> void:
-	current_cards=cards
+	current_cards = cards
 	var container=$CardPopup/Panel/VBoxContainer/Middle/HBoxContainer
 	for child in container.get_children():
 		child.queue_free()

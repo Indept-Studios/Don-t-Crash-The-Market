@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="DCTM"
-run/main_scene="res://scenes/game.tscn"
+run/main_scene="uid://b7mqyx2fmel5a"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Constants="*uid://b88k0236m5tt0"
+HighscoreManager="*uid://s2utq5jfc2vp"
 
 [display]
 

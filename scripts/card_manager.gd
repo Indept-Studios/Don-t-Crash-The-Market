@@ -1,4 +1,5 @@
 extends Node
+class_name CardManager
 
 var card_pool:Array=[
 {"id":"farm_output_up","title":"Better Seeds","description":"Farms produce +1 Food","effect":"farm_output","value":1,"duration":0},
