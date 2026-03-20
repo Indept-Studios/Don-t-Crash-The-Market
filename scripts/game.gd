@@ -186,6 +186,8 @@ func refresh_buildings() -> void:
 	
 func card_selected(card:Dictionary) -> void:
 	var success = card_manager.apply_card(card,self)
+	buildings_changed.emit()
+	resources_changed.emit()
 	if not success:
 		return
 	$UI/CardPopup.hide()

@@ -7,9 +7,11 @@
 [ext_resource type="Texture2D" uid="uid://dw0kjnyym1gdl" path="res://assets/art/Background.png" id="3_p57ef"]
 [ext_resource type="Texture2D" uid="uid://ccpuel180maei" path="res://assets/art/farm.png" id="4_gee14"]
 [ext_resource type="Texture2D" uid="uid://dhwvdn5i63myq" path="res://assets/art/factory.png" id="5_0tnpc"]
-[ext_resource type="Texture2D" uid="uid://loh1b3uw8dry" path="res://assets/art/horse.png" id="5_vtaks"]
+[ext_resource type="Texture2D" uid="uid://n7x4weyjv02c" path="res://assets/art/apple.png" id="5_dinhu"]
 [ext_resource type="Texture2D" uid="uid://bf61kaovl6x0x" path="res://assets/art/city.png" id="6_vtaks"]
 [ext_resource type="Texture2D" uid="uid://dt2lb7j4hw1j2" path="res://assets/art/bank.png" id="7_gee14"]
+[ext_resource type="Texture2D" uid="uid://csoy3iel4swxr" path="res://assets/art/tool.png" id="7_kvuet"]
+[ext_resource type="Texture2D" uid="uid://cb8kivhetci4v" path="res://assets/art/money.png" id="9_trtic"]
 
 [node name="Game" type="Node2D" unique_id=57234821 node_paths=PackedStringArray("highscore_manager")]
 script = ExtResource("1_uwrxv")
@@ -31,13 +33,26 @@ script = ExtResource("3_iywne")
 
 [node name="Farms" type="Node" parent="Buildings" unique_id=2117054079]
 
-[node name="Horse" type="Sprite2D" parent="Buildings/Farms" unique_id=1594837191]
-visible = false
-position = Vector2(790, 257)
-scale = Vector2(0.099999994, 0.099999994)
-texture = ExtResource("5_vtaks")
+[node name="In_Outputs" type="Node" parent="Buildings/Farms" unique_id=757336741]
 
-[node name="TextureRect" type="TextureRect" parent="Buildings/Farms" unique_id=965459775]
+[node name="Output" type="TextureRect" parent="Buildings/Farms/In_Outputs" unique_id=1862504886]
+offset_left = 548.0
+offset_top = 246.0
+offset_right = 970.0
+offset_bottom = 758.0
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("5_dinhu")
+
+[node name="OutputLabel" type="Label" parent="Buildings/Farms/In_Outputs" unique_id=187346386]
+offset_left = 587.0
+offset_top = 258.0
+offset_right = 610.0
+offset_bottom = 313.0
+theme_override_colors/font_color = Color(0.030933155, 0.030933155, 0.030933155, 1)
+theme_override_font_sizes/font_size = 20
+text = "1"
+
+[node name="Icon" type="TextureRect" parent="Buildings/Farms" unique_id=965459775]
 offset_left = 350.0
 offset_top = 150.0
 offset_right = 350.0
@@ -64,7 +79,43 @@ text = "Farms"
 
 [node name="Factories" type="Node" parent="Buildings" unique_id=454222383]
 
-[node name="TextureRect" type="TextureRect" parent="Buildings/Factories" unique_id=238638132]
+[node name="In_Outputs" type="Node" parent="Buildings/Factories" unique_id=222917452]
+
+[node name="Output" type="TextureRect" parent="Buildings/Factories/In_Outputs" unique_id=70862095]
+offset_left = 1302.0
+offset_top = 252.0
+offset_right = 1724.0
+offset_bottom = 764.0
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("7_kvuet")
+
+[node name="Input" type="TextureRect" parent="Buildings/Factories/In_Outputs" unique_id=634958443]
+offset_left = 1051.0
+offset_top = 251.0
+offset_right = 1473.0
+offset_bottom = 763.0
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("5_dinhu")
+
+[node name="OutputLabel" type="Label" parent="Buildings/Factories/In_Outputs" unique_id=1526134581]
+offset_left = 1341.0
+offset_top = 260.0
+offset_right = 1364.0
+offset_bottom = 315.0
+theme_override_colors/font_color = Color(0.030933155, 0.030933155, 0.030933155, 1)
+theme_override_font_sizes/font_size = 20
+text = "1"
+
+[node name="InputLabel" type="Label" parent="Buildings/Factories/In_Outputs" unique_id=1581756983]
+offset_left = 1041.0
+offset_top = 264.0
+offset_right = 1064.0
+offset_bottom = 319.0
+theme_override_colors/font_color = Color(0.030933155, 0.030933155, 0.030933155, 1)
+theme_override_font_sizes/font_size = 20
+text = "1"
+
+[node name="Icon" type="TextureRect" parent="Buildings/Factories" unique_id=238638132]
 offset_left = 1100.0
 offset_top = 150.0
 offset_right = 2124.0
@@ -91,7 +142,60 @@ text = "Factories"
 
 [node name="Cities" type="Node" parent="Buildings" unique_id=1865338654]
 
-[node name="TextureRect" type="TextureRect" parent="Buildings/Cities" unique_id=1733736515]
+[node name="In_Outputs" type="Node" parent="Buildings/Cities" unique_id=1110832304]
+
+[node name="Output" type="TextureRect" parent="Buildings/Cities/In_Outputs" unique_id=236336086]
+offset_left = 903.0
+offset_top = 397.0
+offset_right = 1382.0
+offset_bottom = 909.0
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("9_trtic")
+
+[node name="Input" type="TextureRect" parent="Buildings/Cities/In_Outputs" unique_id=755234578]
+offset_left = 655.0
+offset_top = 383.0
+offset_right = 1077.0
+offset_bottom = 895.0
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("5_dinhu")
+
+[node name="Input2" type="TextureRect" parent="Buildings/Cities/In_Outputs" unique_id=1535713285]
+offset_left = 655.0
+offset_top = 419.0
+offset_right = 1077.0
+offset_bottom = 931.0
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("7_kvuet")
+
+[node name="InputLabel1" type="Label" parent="Buildings/Cities/In_Outputs" unique_id=352532750]
+offset_left = 647.0
+offset_top = 395.0
+offset_right = 670.0
+offset_bottom = 450.0
+theme_override_colors/font_color = Color(0.030933155, 0.030933155, 0.030933155, 1)
+theme_override_font_sizes/font_size = 20
+text = "1"
+
+[node name="InputLabel2" type="Label" parent="Buildings/Cities/In_Outputs" unique_id=826716149]
+offset_left = 648.0
+offset_top = 432.0
+offset_right = 671.0
+offset_bottom = 487.0
+theme_override_colors/font_color = Color(0.030933155, 0.030933155, 0.030933155, 1)
+theme_override_font_sizes/font_size = 20
+text = "1"
+
+[node name="OutputLabel" type="Label" parent="Buildings/Cities/In_Outputs" unique_id=763820294]
+offset_left = 944.0
+offset_top = 409.0
+offset_right = 967.0
+offset_bottom = 464.0
+theme_override_colors/font_color = Color(0.030933155, 0.030933155, 0.030933155, 1)
+theme_override_font_sizes/font_size = 20
+text = "1"
+
+[node name="Icon" type="TextureRect" parent="Buildings/Cities" unique_id=1733736515]
 offset_left = 700.0
 offset_top = 300.0
 offset_right = 1724.0
@@ -118,7 +222,7 @@ text = "Cities"
 
 [node name="Bank" type="Node" parent="Buildings" unique_id=1635757743]
 
-[node name="TextureRect" type="TextureRect" parent="Buildings/Bank" unique_id=344492558]
+[node name="Icon" type="TextureRect" parent="Buildings/Bank" unique_id=344492558]
 offset_left = 700.0
 offset_top = 500.0
 offset_right = 1724.0
