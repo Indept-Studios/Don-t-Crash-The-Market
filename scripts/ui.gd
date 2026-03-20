@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var farms_count = $"../Buildings/Farms/Name"
 @onready var factories_count = $"../Buildings/Factories/Name"
 @onready var cities_count = $"../Buildings/Cities/Name"
+@onready var year_label = $YearLabel
 
 
 var card_scene = preload("res://scenes/card.tscn")
@@ -46,3 +47,10 @@ func update_buildings(buildings: Dictionary) -> void:
 
 func pluralize(count: int, singular: String, plural: String) -> String:
 	return singular if count == 1 else plural
+
+func update_year(tick: int) -> void:
+	year_label.text = "Year: %d" % tick
+
+func _ready():
+	year_label.text = "Year: 1"
+	get_parent().tick_started.connect(update_year)
