@@ -4,8 +4,12 @@
 [ext_resource type="Script" uid="uid://bxqtehu3el1xa" path="res://scripts/card_manager.gd" id="2_lbhrr"]
 [ext_resource type="Script" uid="uid://s2utq5jfc2vp" path="res://scripts/highscore_manager.gd" id="3_iywne"]
 [ext_resource type="PackedScene" uid="uid://dwa476dgw4gxs" path="res://scenes/ui.tscn" id="3_lbhrr"]
-[ext_resource type="Texture2D" uid="uid://81eqlgjm0akv" path="res://icon.svg" id="3_lnu2h"]
 [ext_resource type="Texture2D" uid="uid://dw0kjnyym1gdl" path="res://assets/art/Background.png" id="3_p57ef"]
+[ext_resource type="Texture2D" uid="uid://ccpuel180maei" path="res://assets/art/farm.png" id="4_gee14"]
+[ext_resource type="Texture2D" uid="uid://dhwvdn5i63myq" path="res://assets/art/factory.png" id="5_0tnpc"]
+[ext_resource type="Texture2D" uid="uid://loh1b3uw8dry" path="res://assets/art/horse.png" id="5_vtaks"]
+[ext_resource type="Texture2D" uid="uid://bf61kaovl6x0x" path="res://assets/art/city.png" id="6_vtaks"]
+[ext_resource type="Texture2D" uid="uid://dt2lb7j4hw1j2" path="res://assets/art/bank.png" id="7_gee14"]
 
 [node name="Game" type="Node2D" unique_id=57234821 node_paths=PackedStringArray("highscore_manager")]
 script = ExtResource("1_uwrxv")
@@ -17,8 +21,6 @@ offset_right = 1600.0
 offset_bottom = 904.0
 texture = ExtResource("3_p57ef")
 
-[node name="UI" parent="." unique_id=650135114 instance=ExtResource("3_lbhrr")]
-
 [node name="Card_Manager" type="Node" parent="." unique_id=139710372]
 script = ExtResource("2_lbhrr")
 
@@ -29,100 +31,140 @@ script = ExtResource("3_iywne")
 
 [node name="Farms" type="Node" parent="Buildings" unique_id=2117054079]
 
+[node name="Horse" type="Sprite2D" parent="Buildings/Farms" unique_id=1594837191]
+visible = false
+position = Vector2(790, 257)
+scale = Vector2(0.099999994, 0.099999994)
+texture = ExtResource("5_vtaks")
+
 [node name="TextureRect" type="TextureRect" parent="Buildings/Farms" unique_id=965459775]
 offset_left = 350.0
 offset_top = 150.0
-offset_right = 478.0
-offset_bottom = 278.0
-texture = ExtResource("3_lnu2h")
+offset_right = 350.0
+offset_bottom = 150.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_gee14")
 
-[node name="Label" type="Label" parent="Buildings/Farms/TextureRect" unique_id=1828318405]
-layout_mode = 1
+[node name="Name" type="Label" parent="Buildings/Farms" unique_id=1828318405]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -24.0
-offset_top = -23.0
-offset_right = 24.0
+offset_left = -346.0
+offset_top = -496.0
+offset_right = -298.0
+offset_bottom = -473.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Farms"
+
+[node name="Count" type="Label" parent="Buildings/Farms" unique_id=736527228]
+offset_left = 450.0
+offset_top = 190.0
+offset_right = 490.0
+offset_bottom = 213.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "[2]"
 
 [node name="Instanzen" type="Node" parent="Buildings/Farms" unique_id=2090374870]
 
 [node name="Factories" type="Node" parent="Buildings" unique_id=454222383]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Factories" unique_id=238638132]
-offset_left = 1200.0
+offset_left = 1100.0
 offset_top = 150.0
-offset_right = 1328.0
-offset_bottom = 278.0
-texture = ExtResource("3_lnu2h")
+offset_right = 2124.0
+offset_bottom = 1174.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("5_0tnpc")
 
-[node name="Label" type="Label" parent="Buildings/Factories/TextureRect" unique_id=626910846]
-layout_mode = 1
+[node name="Name" type="Label" parent="Buildings/Factories" unique_id=626910846]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -35.5
-offset_top = -23.0
-offset_right = 35.5
+offset_left = 337.0
+offset_top = -498.0
+offset_right = 408.0
+offset_bottom = -475.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Factories"
+
+[node name="Count" type="Label" parent="Buildings/Factories" unique_id=1874076014]
+offset_left = 1150.0
+offset_top = 188.0
+offset_right = 1190.0
+offset_bottom = 211.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "[1]"
 
 [node name="Instanzen" type="Node" parent="Buildings/Factories" unique_id=29051201]
 
 [node name="Cities" type="Node" parent="Buildings" unique_id=1865338654]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Cities" unique_id=1733736515]
-offset_left = 750.0
-offset_top = 350.0
-offset_right = 878.0
-offset_bottom = 478.0
-texture = ExtResource("3_lnu2h")
+offset_left = 700.0
+offset_top = 300.0
+offset_right = 1724.0
+offset_bottom = 1324.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("6_vtaks")
 
-[node name="Label" type="Label" parent="Buildings/Cities/TextureRect" unique_id=659341485]
-layout_mode = 1
+[node name="Name" type="Label" parent="Buildings/Cities" unique_id=659341485]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -23.0
-offset_right = 20.0
+offset_left = -45.0
+offset_top = -344.0
+offset_right = -2.0
+offset_bottom = -321.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Cities"
+
+[node name="Count" type="Label" parent="Buildings/Cities" unique_id=1179162175]
+offset_left = 783.0
+offset_top = 337.0
+offset_right = 823.0
+offset_bottom = 360.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "[1]"
 
 [node name="Instanzen" type="Node" parent="Buildings/Cities" unique_id=1014308821]
 
 [node name="Bank" type="Node" parent="Buildings" unique_id=1635757743]
 
 [node name="TextureRect" type="TextureRect" parent="Buildings/Bank" unique_id=344492558]
-offset_left = 750.0
-offset_top = 600.0
-offset_right = 878.0
-offset_bottom = 728.0
-texture = ExtResource("3_lnu2h")
+offset_left = 700.0
+offset_top = 500.0
+offset_right = 1724.0
+offset_bottom = 1524.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("7_gee14")
 
-[node name="Label" type="Label" parent="Buildings/Bank/TextureRect" unique_id=1839546328]
-layout_mode = 1
+[node name="Name" type="Label" parent="Buildings/Bank" unique_id=1839546328]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -23.0
-offset_right = 20.0
+offset_left = -30.0
+offset_top = -143.0
+offset_right = 10.0
+offset_bottom = -120.0
 grow_horizontal = 2
 grow_vertical = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Bank"
 
 [node name="Instanzen" type="Node" parent="Buildings/Bank" unique_id=74576661]
+
+[node name="UI" parent="." unique_id=650135114 instance=ExtResource("3_lbhrr")]

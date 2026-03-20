@@ -44,6 +44,7 @@ layout_mode = 2
 text = "NEW GAME"
 
 [node name="options" type="Button" parent="VBoxContainer" unique_id=305111333]
+visible = false
 layout_mode = 2
 text = "OPTIONS"
 

@@ -4,6 +4,11 @@ extends CanvasLayer
 @onready var tools = $Panel/HBoxContainer/Tools
 @onready var money = $Panel/HBoxContainer/Money
 
+@onready var farms_count = $"../Buildings/Farms/Count"
+@onready var factories_count = $"../Buildings/Factories/Count"
+@onready var cities_count = $"../Buildings/Cities/Count"
+
+
 var card_scene = preload("res://scenes/card.tscn")
 
 signal card_selected(card)
@@ -28,3 +33,9 @@ func update_resources(stock: Dictionary) -> void:
 	food.text = "FOOD: %d" % stock[Constants.RESOURCE_FOOD]
 	tools.text = "TOOLS: %d" % stock[Constants.RESOURCE_TOOLS]
 	money.text = "MONEY: %d" % stock[Constants.RESOURCE_MONEY]
+	
+func update_buildings(buildings: Dictionary) -> void:
+	if buildings != null:
+		farms_count.text = "[%d]" % buildings.get(Constants.BUILDING_FARM, []).size()
+		factories_count.text = "[%d]" % buildings.get(Constants.BUILDING_FACTORY, []).size()
+		cities_count.text = "[%d]" % buildings.get(Constants.BUILDING_CITY, []).size()

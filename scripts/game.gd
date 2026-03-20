@@ -1,6 +1,7 @@
 extends Node
 
 signal resources_changed()
+signal buildings_changed()
 
 @onready var card_manager = $Card_Manager
 @export var highscore_manager: Node
@@ -22,7 +23,12 @@ var modifiers = {
 }
 var temporary_effects:Array=[]
 
-var buildings = {}
+var buildings := {
+	Constants.BUILDING_FARM: [],
+	Constants.BUILDING_FACTORY: [],
+	Constants.BUILDING_CITY: [],
+	Constants.BUILDING_BANK: []
+}
 var next_building_id := 1
 var has_won: bool = false
 
@@ -54,7 +60,6 @@ func run_tick() -> void:
 		return
 	tick_count += 1
 	process_production()
-	process_banks()
 	if has_won:
 		return
 	if Constants.DEBUGFLAG:
@@ -87,8 +92,13 @@ func setup_start_condition() -> void:
 	create_building(Constants.BUILDING_FARM)
 	create_building(Constants.BUILDING_FARM)
 	create_building(Constants.BUILDING_FACTORY)
+	
 	stock[Constants.RESOURCE_FOOD] = 25
 	stock[Constants.RESOURCE_TOOLS] = 25
+	stock[Constants.RESOURCE_MONEY] = 0
+	
+	refresh_buildings()
+	resources_changed.emit()
 	
 func stop_game() -> void:
 	is_running = false
@@ -127,7 +137,7 @@ func reset_game_state() -> void:
 		Constants.RESOURCE_TOOLS: 0,
 		Constants.RESOURCE_MONEY: 0
 	}
-	buildings = {}
+	
 	for child in $Buildings/Farms/Instanzen.get_children():
 		child.queue_free()
 	for child in $Buildings/Factories/Instanzen.get_children():
@@ -137,23 +147,43 @@ func reset_game_state() -> void:
 	for child in $Buildings/Bank/Instanzen.get_children():
 		child.queue_free()
 
+	buildings = {
+		Constants.BUILDING_FARM: [],
+		Constants.BUILDING_FACTORY: [],
+		Constants.BUILDING_CITY: [],
+		Constants.BUILDING_BANK: []
+	}
+	
 	resources_changed.emit()
+	buildings_changed.emit()
 #endregion
 
 func _ready() -> void:
 	card_manager.game = self
 	$UI/CardPopup.hide()
 	setup_tick_timer()
-	setup_start_condition()
-	start_game()
 	$UI.card_selected.connect(card_selected)
 	resources_changed.connect(_on_resources_changed)
+	buildings_changed.connect(_on_buildings_changed)
+	start_game()
 	_on_resources_changed()
+	_on_buildings_changed()
 
 func _on_resources_changed() -> void:
 	$UI.update_resources(stock)
 	
+func _on_buildings_changed() -> void:
+	$UI.update_buildings(buildings)
 
+func refresh_buildings() -> void:
+	buildings = {
+		Constants.BUILDING_FARM: $Buildings/Farms/Instanzen.get_children(),
+		Constants.BUILDING_FACTORY: $Buildings/Factories/Instanzen.get_children(),
+		Constants.BUILDING_CITY: $Buildings/Cities/Instanzen.get_children(),
+		Constants.BUILDING_BANK: $Buildings/Bank/Instanzen.get_children()
+	}
+	buildings_changed.emit()
+	
 func card_selected(card:Dictionary) -> void:
 	var success = card_manager.apply_card(card,self)
 	if not success:
@@ -162,11 +192,7 @@ func card_selected(card:Dictionary) -> void:
 	resume_game()
 
 func process_production() -> void:
-	buildings = {
-		Constants.BUILDING_FARM: $Buildings/Farms/Instanzen.get_children(),
-		Constants.BUILDING_FACTORY: $Buildings/Factories/Instanzen.get_children(),
-		Constants.BUILDING_CITY: $Buildings/Cities/Instanzen.get_children()
-	}
+	refresh_buildings()
 	process_farms()
 	process_factories()
 	process_cities()
@@ -227,7 +253,7 @@ func debug_production(building, base_value, modifier, effective_value) -> void:
 
 func process_farms() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
-	for building in buildings[Constants.BUILDING_FARM]:
+	for building in buildings.get(Constants.BUILDING_FARM,[]):
 		building.is_active = true
 		normalize_efficiency_to_one(building)
 		var modifier = get_modifier("farm_output")
@@ -241,54 +267,63 @@ func process_farms() -> void:
 func process_factories() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
 	var TOOLS = Constants.RESOURCE_TOOLS
-	for building in buildings[Constants.BUILDING_FACTORY]:
-		var base_input = building.inputs[FOOD]
+
+	for building in buildings.get(Constants.BUILDING_FACTORY, []):
+		var base_input = building.inputs.get(FOOD, Constants.FACTORY_FOOD_INPUT)
 		var modifier = get_modifier("factory_food_input")
-		var food_input = max(1,base_input+modifier)
+		var food_input = max(1, base_input + modifier)
+
 		var output_modifier = get_modifier("factory_output")
-		var tools_output = get_modified_value(building.outputs[TOOLS],get_modifier("factory_output"),0)
-		if consume_resource(FOOD,food_input):
+		var base_output = building.outputs.get(TOOLS, Constants.FACTORY_TOOLS_OUTPUT)
+		var tools_output = get_modified_value(base_output, output_modifier, 0)
+
+		if consume_resource(FOOD, food_input):
 			building.is_active = true
 			normalize_efficiency_to_one(building)
-			building.production_progress += tools_output*building.efficiency
+			building.production_progress += tools_output * building.efficiency
 		else:
 			building.is_active = false
 			if building.efficiency > 0.0:
 				building.efficiency -= Constants.EFFICIENCY_LOSS_PER_TICK
 				if building.efficiency < 0.0:
 					building.efficiency = 0.0
-		debug_production(building,building.outputs[TOOLS],output_modifier,tools_output)
+
+		debug_production(building, base_output, output_modifier, tools_output)
+
 		while building.production_progress >= 1.0:
-			add_resources(TOOLS,1)
+			add_resources(TOOLS, 1)
 			building.production_progress -= 1.0
 
 func process_cities() -> void:
 	var FOOD = Constants.RESOURCE_FOOD
 	var TOOLS = Constants.RESOURCE_TOOLS
 	var MONEY = Constants.RESOURCE_MONEY
-	for building in buildings[Constants.BUILDING_CITY]:
-		var base_food = building.inputs[FOOD]
-		var base_tools = building.inputs[TOOLS]
-		
+
+	for building in buildings.get(Constants.BUILDING_CITY, []):
+		var base_food = building.inputs.get(FOOD, Constants.CITY_FOOD_INPUT)
+		var base_tools = building.inputs.get(TOOLS, Constants.CITY_TOOLS_INPUT)
+
 		var food_modifier = get_modifier("city_food_input")
 		var tools_modifier = get_modifier("city_tools_input")
 		var money_modifier = get_modifier("city_money_output")
-		
-		var food_input = max(1,base_food+food_modifier)
-		var tools_input = max(1,base_tools+tools_modifier)
-		
-		var money_output = get_modified_value(building.outputs[MONEY],money_modifier,0)
-		
+
+		var food_input = max(1, base_food + food_modifier)
+		var tools_input = max(1, base_tools + tools_modifier)
+
+		var base_money = building.outputs.get(MONEY, Constants.CITY_MONEY_OUTPUT)
+		var money_output = get_modified_value(base_money, money_modifier, 0)
+
 		var has_food = stock[FOOD] >= food_input
 		var has_tools = stock[TOOLS] >= tools_input
-		
+
 		var supplied_resources = 0
 		if has_food:
-			consume_resource(FOOD,food_input)
+			consume_resource(FOOD, food_input)
 			supplied_resources += 1
 		if has_tools:
-			consume_resource(TOOLS,tools_input)
+			consume_resource(TOOLS, tools_input)
 			supplied_resources += 1
+
 		var target_efficiency = 0.0
 		if supplied_resources == 2:
 			target_efficiency = 1.0
@@ -299,11 +334,14 @@ func process_cities() -> void:
 		else:
 			target_efficiency = 0.0
 			building.is_active = false
-		move_efficiency_toward(building,target_efficiency)
+
+		move_efficiency_toward(building, target_efficiency)
 		building.production_progress += building.efficiency
-		debug_production(building,building.outputs[MONEY],money_modifier,money_output)
+
+		debug_production(building, base_money, money_modifier, money_output)
+
 		while building.production_progress >= 1.0:
-			add_resources(MONEY,money_output)
+			add_resources(MONEY, money_output)
 			building.production_progress -= 1.0
 
 func process_banks() -> void:
@@ -333,18 +371,49 @@ func get_run_time_seconds() -> float:
 func process_transport() -> void:
 	pass
 
+func remove_building_by_type(building_type) -> bool:
+	if not buildings.has(building_type):
+		return false
+
+	var list = buildings[building_type]
+	if list.is_empty():
+		return false
+
+	var building = list.pop_back()
+	if is_instance_valid(building):
+		building.queue_free()
+
+	refresh_buildings()
+	return true
+	
 #region Building Factory
-func create_building(type: String) -> void:
-	match type:
+func create_building(building_type) -> Node:
+	var building = building_scene.instantiate()
+
+	building.building_type = building_type
+	building.building_id = next_building_id
+	building.name = "%s_%d" % [str(building_type).capitalize(), next_building_id]
+	next_building_id += 1
+
+	match building_type:
 		Constants.BUILDING_FARM:
-			create_farm(next_building_id)
+			$Buildings/Farms/Instanzen.add_child(building)
+
 		Constants.BUILDING_FACTORY:
-			create_factory(next_building_id)
+			$Buildings/Factories/Instanzen.add_child(building)
+
 		Constants.BUILDING_CITY:
-			create_city(next_building_id)
+			$Buildings/Cities/Instanzen.add_child(building)
+
 		Constants.BUILDING_BANK:
-			create_bank(next_building_id)
-	next_building_id+=1
+			$Buildings/Bank/Instanzen.add_child(building)
+
+		_:
+			building.queue_free()
+			return null
+
+	refresh_buildings()
+	return building
 
 func create_farm(id: int) -> void:
 	var parent_node = $Buildings/Farms/Instanzen
