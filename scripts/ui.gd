@@ -4,9 +4,9 @@ extends CanvasLayer
 @onready var tools = $Panel/HBoxContainer/Tools
 @onready var money = $Panel/HBoxContainer/Money
 
-@onready var farms_count = $"../Buildings/Farms/Count"
-@onready var factories_count = $"../Buildings/Factories/Count"
-@onready var cities_count = $"../Buildings/Cities/Count"
+@onready var farms_count = $"../Buildings/Farms/Name"
+@onready var factories_count = $"../Buildings/Factories/Name"
+@onready var cities_count = $"../Buildings/Cities/Name"
 
 
 var card_scene = preload("res://scenes/card.tscn")
@@ -36,6 +36,13 @@ func update_resources(stock: Dictionary) -> void:
 	
 func update_buildings(buildings: Dictionary) -> void:
 	if buildings != null:
-		farms_count.text = "[%d]" % buildings.get(Constants.BUILDING_FARM, []).size()
-		factories_count.text = "[%d]" % buildings.get(Constants.BUILDING_FACTORY, []).size()
-		cities_count.text = "[%d]" % buildings.get(Constants.BUILDING_CITY, []).size()
+		var farm_count = buildings.get(Constants.BUILDING_FARM, []).size()
+		var factory_count = buildings.get(Constants.BUILDING_FACTORY, []).size()
+		var city_count = buildings.get(Constants.BUILDING_CITY, []).size()
+
+		farms_count.text = "%d %s" % [farm_count, pluralize(farm_count, "FARM", "FARMS")]
+		factories_count.text = "%d %s" % [factory_count, pluralize(factory_count, "FACTORY", "FACTORIES")]
+		cities_count.text = "%d %s" % [city_count, pluralize(city_count, "CITY", "CITIES")]
+
+func pluralize(count: int, singular: String, plural: String) -> String:
+	return singular if count == 1 else plural

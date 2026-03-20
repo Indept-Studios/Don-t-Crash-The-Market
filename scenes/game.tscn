@@ -51,22 +51,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -346.0
-offset_top = -496.0
-offset_right = -298.0
-offset_bottom = -473.0
+offset_left = -364.0
+offset_top = -477.0
+offset_right = -316.0
+offset_bottom = -454.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Farms"
-
-[node name="Count" type="Label" parent="Buildings/Farms" unique_id=736527228]
-offset_left = 450.0
-offset_top = 190.0
-offset_right = 490.0
-offset_bottom = 213.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "[2]"
 
 [node name="Instanzen" type="Node" parent="Buildings/Farms" unique_id=2090374870]
 
@@ -86,22 +78,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 337.0
-offset_top = -498.0
-offset_right = 408.0
-offset_bottom = -475.0
+offset_left = 378.0
+offset_top = -475.0
+offset_right = 449.0
+offset_bottom = -452.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Factories"
-
-[node name="Count" type="Label" parent="Buildings/Factories" unique_id=1874076014]
-offset_left = 1150.0
-offset_top = 188.0
-offset_right = 1190.0
-offset_bottom = 211.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "[1]"
 
 [node name="Instanzen" type="Node" parent="Buildings/Factories" unique_id=29051201]
 
@@ -121,22 +105,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -45.0
-offset_top = -344.0
-offset_right = -2.0
-offset_bottom = -321.0
+offset_left = -18.0
+offset_top = -323.0
+offset_right = 25.0
+offset_bottom = -300.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Cities"
-
-[node name="Count" type="Label" parent="Buildings/Cities" unique_id=1179162175]
-offset_left = 783.0
-offset_top = 337.0
-offset_right = 823.0
-offset_bottom = 360.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "[1]"
 
 [node name="Instanzen" type="Node" parent="Buildings/Cities" unique_id=1014308821]
 
