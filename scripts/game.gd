@@ -59,6 +59,7 @@ func run_tick() -> void:
 	if has_won:
 		return
 	tick_count += 1
+	tick_started.emit(tick_count)
 	process_production()
 	if has_won:
 		return
@@ -72,7 +73,6 @@ func run_tick() -> void:
 		$UI.show_cards(cards)
 		$UI/CardPopup.show()
 		return
-	tick_started.emit(tick_count)
 	process_transport()
 	update_temporary_effects()
 	tick_finished.emit(tick_count)
