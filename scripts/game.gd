@@ -390,99 +390,62 @@ func remove_building_by_type(building_type) -> bool:
 func create_building(building_type) -> Node:
 	var building = building_scene.instantiate()
 
-	building.building_type = building_type
 	building.building_id = next_building_id
+	building.building_type = building_type
+	building.inputs = {}
+	building.outputs = {}
+	building.efficiency = 1.0
+	building.production_progress = 0.0
+	building.is_active = true
+	building.modifiers = {}
+	building.temporary_effects = []
 	building.name = "%s_%d" % [str(building_type).capitalize(), next_building_id]
+
 	next_building_id += 1
 
 	match building_type:
 		Constants.BUILDING_FARM:
+			building.inputs = {
+				Constants.RESOURCE_TOOLS: Constants.FARM_TOOLS_INPUT
+			}
+			building.outputs = {
+				Constants.RESOURCE_FOOD: Constants.FARM_FOOD_OUTPUT
+			}
 			$Buildings/Farms/Instanzen.add_child(building)
 
 		Constants.BUILDING_FACTORY:
+			building.inputs = {
+				Constants.RESOURCE_FOOD: Constants.FACTORY_FOOD_INPUT
+			}
+			building.outputs = {
+				Constants.RESOURCE_TOOLS: Constants.FACTORY_TOOLS_OUTPUT
+			}
 			$Buildings/Factories/Instanzen.add_child(building)
 
 		Constants.BUILDING_CITY:
+			building.inputs = {
+				Constants.RESOURCE_FOOD: Constants.CITY_FOOD_INPUT,
+				Constants.RESOURCE_TOOLS: Constants.CITY_TOOLS_INPUT
+			}
+			building.outputs = {
+				Constants.RESOURCE_MONEY: Constants.CITY_MONEY_OUTPUT
+			}
 			$Buildings/Cities/Instanzen.add_child(building)
 
 		Constants.BUILDING_BANK:
+			building.inputs = {}
+			building.outputs = {}
 			$Buildings/Bank/Instanzen.add_child(building)
 
 		_:
 			building.queue_free()
 			return null
 
+	if Constants.DEBUGFLAG:
+		print("%s added" % str(building_type).to_upper())
+
 	refresh_buildings()
 	return building
-
-func create_farm(id: int) -> void:
-	var parent_node = $Buildings/Farms/Instanzen
-	var building = building_scene.instantiate()
-	building.id = id
-	building.building_type = Constants.BUILDING_FARM
-	building.inputs = {
-		Constants.RESOURCE_TOOLS: Constants.FARM_TOOLS_INPUT
-	}
-	building.outputs = {
-		Constants.RESOURCE_FOOD: Constants.FARM_FOOD_OUTPUT
-	}
-	parent_node.add_child(building)
-	building.name = "Farm_" + str(id)
-
-	if Constants.DEBUGFLAG:
-		print("FARM added")
-
-func create_factory(id: int) -> void:
-	var parent_node = $Buildings/Factories/Instanzen
-	var building = building_scene.instantiate()
-	building.id = id
-	building.building_type = Constants.BUILDING_FACTORY
-	building.inputs = {
-		Constants.RESOURCE_FOOD: Constants.FACTORY_FOOD_INPUT
-	}
-	building.outputs = {
-		Constants.RESOURCE_TOOLS: Constants.FACTORY_TOOLS_OUTPUT
-	}
-	parent_node.add_child(building)
-	building.name = "Factory_" + str(id)
-
-	if Constants.DEBUGFLAG:
-		print("FACTORY added")
-
-func create_city(id: int) -> void:
-	var parent_node = $Buildings/Cities/Instanzen
-	var building = building_scene.instantiate()
-	building.id = id
-	building.building_type = Constants.BUILDING_CITY
-	building.inputs = {
-		Constants.RESOURCE_FOOD: Constants.CITY_FOOD_INPUT,
-		Constants.RESOURCE_TOOLS: Constants.CITY_TOOLS_INPUT
-	}
-	building.outputs = {
-		Constants.RESOURCE_MONEY: Constants.CITY_MONEY_OUTPUT
-	}
-	parent_node.add_child(building)
-	building.name = "City_" + str(id)
-
-	if Constants.DEBUGFLAG:
-		print("CITY added")
-
-func create_bank(id: int) -> void:
-	var parent_node = $Buildings/Bank/Instanzen
-	var building = building_scene.instantiate()
-	building.id = id
-	building.building_type = Constants.BUILDING_BANK
-	building.inputs = {
-		#ADD Inputs to Bank
-	}
-	building.outputs = {
-		#ADD Output to Bank
-	}
-	building.name = "Bank_%d" % parent_node.get_child_count()
-	parent_node.add_child(building)
-
-	if Constants.DEBUGFLAG:
-		print("BANK added")
 #endregion
 
 func add_resources(type: String, amount: float) -> void:

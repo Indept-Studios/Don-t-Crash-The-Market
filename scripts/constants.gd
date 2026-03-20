@@ -3,7 +3,7 @@ extends Node
 const TICK_INTERVAL := 1.0
 const CARD_POPUP_INTERVAL := 10
 
-const DEBUGFLAG := true
+const DEBUGFLAG := false
 
 const RESOURCE_FOOD := "food"
 const RESOURCE_TOOLS := "tools"
