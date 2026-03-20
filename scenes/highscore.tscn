@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://db2d5ayqokech"]
 
 [ext_resource type="Script" uid="uid://dcsr3wyer61yb" path="res://scripts/highscore_menu.gd" id="1_tnxs0"]
+[ext_resource type="Texture2D" uid="uid://dw0kjnyym1gdl" path="res://assets/art/Background.png" id="2_m4g86"]
 
 [node name="Highscore" type="Control" unique_id=1776948907]
 layout_mode = 3
@@ -10,6 +11,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_tnxs0")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=529388592]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_m4g86")
 
 [node name="Panel" type="Panel" parent="." unique_id=1787522699]
 layout_mode = 1
