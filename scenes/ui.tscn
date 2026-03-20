@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dwa476dgw4gxs"]
 
 [ext_resource type="Script" uid="uid://c5cauxiqtwyk3" path="res://scripts/ui.gd" id="1_nt7q6"]
+[ext_resource type="Texture2D" uid="uid://n7x4weyjv02c" path="res://assets/art/apple.png" id="2_gdt2y"]
+[ext_resource type="Texture2D" uid="uid://csoy3iel4swxr" path="res://assets/art/tool.png" id="3_wm3ai"]
+[ext_resource type="Texture2D" uid="uid://cb8kivhetci4v" path="res://assets/art/money.png" id="4_8dubc"]
 
 [node name="UI" type="CanvasLayer" unique_id=650135114]
 layer = 0
@@ -33,20 +36,64 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
 
-[node name="Food" type="Label" parent="Panel/HBoxContainer" unique_id=2122785858]
+[node name="HBoxContainer_food" type="HBoxContainer" parent="Panel/HBoxContainer" unique_id=33982405]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/HBoxContainer_food" unique_id=1206041854]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("2_gdt2y")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Food" type="Label" parent="Panel/HBoxContainer/HBoxContainer_food" unique_id=2122785858]
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Tools" type="Label" parent="Panel/HBoxContainer" unique_id=1577008248]
+[node name="HBoxContainer_tools" type="HBoxContainer" parent="Panel/HBoxContainer" unique_id=1246481476]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/HBoxContainer_tools" unique_id=1074875483]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("3_wm3ai")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Tools" type="Label" parent="Panel/HBoxContainer/HBoxContainer_tools" unique_id=1577008248]
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Money" type="Label" parent="Panel/HBoxContainer" unique_id=1150899215]
+[node name="HBoxContainer_money" type="HBoxContainer" parent="Panel/HBoxContainer" unique_id=705064747]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Panel/HBoxContainer/HBoxContainer_money" unique_id=860067894]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 10
+texture = ExtResource("4_8dubc")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Money" type="Label" parent="Panel/HBoxContainer/HBoxContainer_money" unique_id=1150899215]
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_alignment = 1

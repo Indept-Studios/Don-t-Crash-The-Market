@@ -2,9 +2,9 @@ extends CanvasLayer
 
 @onready var game = get_parent()
 
-@onready var food = $Panel/HBoxContainer/Food
-@onready var tools = $Panel/HBoxContainer/Tools
-@onready var money = $Panel/HBoxContainer/Money
+@onready var food = $Panel/HBoxContainer/HBoxContainer_food/Food
+@onready var tools = $Panel/HBoxContainer/HBoxContainer_tools/Tools
+@onready var money = $Panel/HBoxContainer/HBoxContainer_money/Money
 
 @onready var farms_count = $"../Buildings/Farms/Name"
 @onready var factories_count = $"../Buildings/Factories/Name"
@@ -42,9 +42,9 @@ func _on_card_pressed(card):
 	card_selected.emit(card)
 
 func update_resources(stock: Dictionary) -> void:
-	food.text = "FOOD: %d" % stock[Constants.RESOURCE_FOOD]
-	tools.text = "TOOLS: %d" % stock[Constants.RESOURCE_TOOLS]
-	money.text = "MONEY: %d" % stock[Constants.RESOURCE_MONEY]
+	food.text = "%d" % stock[Constants.RESOURCE_FOOD]
+	tools.text = "%d" % stock[Constants.RESOURCE_TOOLS]
+	money.text = "%d" % stock[Constants.RESOURCE_MONEY]
 	
 func update_buildings(buildings: Dictionary) -> void:
 	if buildings != null:
