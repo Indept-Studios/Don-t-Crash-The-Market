@@ -1,6 +1,6 @@
 extends Control
 
-@onready var entries_container = $Panel/VBoxContainer/EntriesSection/EntriesVBox
+@onready var entries_container = %EntriesVBox
 
 func _ready():
 	fill_highscores()

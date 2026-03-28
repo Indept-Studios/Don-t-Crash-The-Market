@@ -1,40 +1,137 @@
 [gd_scene format=3 uid="uid://dy2yix7nu3264"]
 
 [ext_resource type="Script" uid="uid://bf57l3ycfe5yu" path="res://scripts/card.gd" id="1_d81rb"]
+[ext_resource type="Theme" uid="uid://8psmhpybak0i" path="res://assets/dctm.tres" id="2_6u4wf"]
 
-[node name="Card" type="Panel" unique_id=1296471291]
-custom_minimum_size = Vector2(297, 350)
-offset_right = 297.0
-offset_bottom = 350.0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6u4wf"]
+bg_color = Color(0.47843137, 0.36078432, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.6431373, 0.42352942, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ktuci"]
+bg_color = Color(0.47843137, 0.36078432, 0.24313726, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.6431373, 0.42352942, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kg30u"]
+bg_color = Color(0.47843137, 0.36078432, 0.24313726, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7882353, 0.6431373, 0.42352942, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="Card" type="Control" unique_id=1492919858]
+custom_minimum_size = Vector2(320, 350)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 357.0
 size_flags_horizontal = 3
+mouse_filter = 1
 script = ExtResource("1_d81rb")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1318951799]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 20
+[node name="PanelContainer_card" type="PanelContainer" parent="." unique_id=988334843]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme = ExtResource("2_6u4wf")
 
-[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=417447017]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer_card" unique_id=1318951799]
 layout_mode = 2
-size_flags_vertical = 0
-theme_override_font_sizes/font_size = 25
-horizontal_alignment = 1
-autowrap_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
 
-[node name="DescriptionLabel" type="Label" parent="VBoxContainer" unique_id=1573586151]
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer_card/VBoxContainer" unique_id=682901970]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer_card/VBoxContainer/MarginContainer" unique_id=1942394696]
+layout_mode = 2
+theme = ExtResource("2_6u4wf")
+theme_override_styles/panel = SubResource("StyleBoxFlat_6u4wf")
+
+[node name="TitleLabel" type="Label" parent="PanelContainer_card/VBoxContainer/MarginContainer/PanelContainer" unique_id=417447017]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 25
+text = "TITEL"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="MarginContainer2" type="MarginContainer" parent="PanelContainer_card/VBoxContainer" unique_id=1321284786]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
+
+[node name="PanelContainer-2" type="PanelContainer" parent="PanelContainer_card/VBoxContainer/MarginContainer2" unique_id=76695089]
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("2_6u4wf")
+theme_override_styles/panel = SubResource("StyleBoxFlat_ktuci")
+
+[node name="DescriptionLabel" type="Label" parent="PanelContainer_card/VBoxContainer/MarginContainer2/PanelContainer-2" unique_id=1573586151]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 15
+text = "DESCRIPTION
+On
+MANY
+LINES"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
+autowrap_mode = 3
+uppercase = true
 
-[node name="EffectLabel" type="Label" parent="VBoxContainer" unique_id=943026277]
+[node name="MarginContainer3" type="MarginContainer" parent="PanelContainer_card/VBoxContainer" unique_id=194786677]
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
-size_flags_vertical = 8
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer_card/VBoxContainer/MarginContainer3" unique_id=1781527973]
+layout_mode = 2
+theme = ExtResource("2_6u4wf")
+theme_override_styles/panel = SubResource("StyleBoxFlat_kg30u")
+
+[node name="EffectLabel" type="Label" parent="PanelContainer_card/VBoxContainer/MarginContainer3/PanelContainer" unique_id=943026277]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 15
+text = "EFFECT"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
+uppercase = true

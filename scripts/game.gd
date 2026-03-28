@@ -4,6 +4,7 @@ signal resources_changed()
 signal buildings_changed()
 
 @onready var card_manager = $Card_Manager
+
 @export var highscore_manager: Node
 
 var building_scene = preload("res://scenes/building.tscn")
@@ -200,6 +201,8 @@ func process_production() -> void:
 	process_cities()
 	process_banks()
 
+
+		
 func normalize_efficiency_to_one(building) -> void:
 	if building.efficiency < 1.0:
 		building.efficiency += Constants.EFFICIENCY_RECOVERY_PER_TICK

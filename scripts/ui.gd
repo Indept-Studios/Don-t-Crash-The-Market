@@ -2,14 +2,15 @@ extends CanvasLayer
 
 @onready var game = get_parent()
 
-@onready var food = $Panel/HBoxContainer/HBoxContainer_food/Food
-@onready var tools = $Panel/HBoxContainer/HBoxContainer_tools/Tools
-@onready var money = $Panel/HBoxContainer/HBoxContainer_money/Money
+@onready var food = %Food
+@onready var tools = %Tools
+@onready var money = %Money
 
 @onready var farms_count = $"../Buildings/Farms/Name"
 @onready var factories_count = $"../Buildings/Factories/Name"
 @onready var cities_count = $"../Buildings/Cities/Name"
-@onready var year_label = $YearLabel
+@onready var year_label = %YearLabel
+
 #FARMS
 @onready var output_label_Farm = $"../Buildings/Farms/In_Outputs/OutputLabel"
 #FACTORIES
@@ -29,11 +30,11 @@ var current_cards: Array
 
 func show_cards(cards:Array) -> void:
 	current_cards = cards
-	var container=$CardPopup/Panel/VBoxContainer/Middle/HBoxContainer
+	var container = %HBoxContainer
 	for child in container.get_children():
 		child.queue_free()
 	for card in cards:
-		var card_instance=card_scene.instantiate()
+		var card_instance = card_scene.instantiate()
 		container.add_child(card_instance)
 		card_instance.set_card_data(card)
 		card_instance.card_pressed.connect(_on_card_pressed)
